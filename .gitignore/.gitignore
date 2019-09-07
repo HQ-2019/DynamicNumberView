@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+xcuserdata/
+xcshareddata/
+build/
+DerivedData/
+.sonar/
+.scannerwork
+
+IDEWorkspaceChecks.plist
