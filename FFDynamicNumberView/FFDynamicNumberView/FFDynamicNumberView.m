@@ -203,7 +203,7 @@ static CGSize singleNumerSize(UIFont *font) {
                animation:(AnimationType)animation {
     if (self.currentNumber == dispalyNumber) {
         // Integer的默认值是0，为了避免首次赋值是0时不显示，这里需要给label设置值
-        [self settttt:[NSString stringWithFormat:@"%lu", dispalyNumber]];
+        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber]];
         return;
     }
     
@@ -212,7 +212,7 @@ static CGSize singleNumerSize(UIFont *font) {
     
     // 只处理向上或向下的滚动动画计算
     if (animation != AnimationTypeScrollUp && animation != AnimationTypeScrollDown) {
-        [self settttt:[NSString stringWithFormat:@"%lu", dispalyNumber]];
+        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber]];
         return;
     }
 
@@ -256,12 +256,11 @@ static CGSize singleNumerSize(UIFont *font) {
             }
         }
     }
-    [self settttt:numberString];
+    [self updateLabelHeightWithText:numberString];
 }
 
-- (void)settttt:(NSString *)numberString {
+- (void)updateLabelHeightWithText:(NSString *)numberString {
     NSString *text = [numberString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-//    NSLog(@"\n 原值 %lu  新值 %lu text: %@   \nnumberString: %@", startNumber, dispalyNumber, text, numberString);
     NSInteger numberCount = text.length;
     // 更新label的内容和size
     self.numberLabel.text = numberString;
