@@ -7,9 +7,12 @@
 //
 
 #import "ViewController.h"
+#import <Masonry/Masonry.h>
 #import "FFDynamicNumberView.h"
 
 @interface ViewController ()
+
+@property (nonatomic, strong) FFDynamicNumberView *numberView;
 
 @end
 
@@ -18,16 +21,48 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    FFDynamicNumberView *numberView = [FFDynamicNumberView new];
-    numberView.backgroundColor = UIColor.yellowColor;
-    numberView.numberColor = UIColor.redColor;
-    numberView.frame = CGRectMake(30, 150, 200, 100);
-    [self.view addSubview:numberView];
-    [numberView updateNumbers:399 animation:AnimationTypeScrollUp duration:1];
+    self.numberView = [FFDynamicNumberView new];
+    self.numberView.backgroundColor = UIColor.purpleColor;
+    self.numberView.numberColor = UIColor.redColor;
+    self.numberView.numberSpace = 10;
+    self.numberView.numberFont = [UIFont boldSystemFontOfSize:17];
+    self.numberView.numberAlignment = NumberAlignmentCenter;
+    [self.view addSubview:self.numberView];
+    //    self.numberView.frame = CGRectMake((self.view.frame.size.width - 200) / 2, 100, 200, 40);
+    [self.numberView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view);
+        make.top.mas_equalTo(100);
+        make.width.mas_equalTo(200);
+        make.height.mas_equalTo(40);
+    }];
+    [self.numberView layoutIfNeeded];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [numberView updateNumbers:874 animation:AnimationTypeScrollUp duration:3];
-    });
+    // 设置默认展示的数字
+    [self.numberView updateNumbers:1055 animation:AnimationTypeNone duration:0];
+    
+    
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, 400, 100, 40) title:@"-" action:@selector(subductionAction)];
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, 450, 100, 40) title:@"+" action:@selector(additionAction)];
+}
+
+- (void)buildButtonWithFrame:(CGRect)frame title:(NSString *)title action:(SEL)action {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.frame = frame;
+    button.backgroundColor = UIColor.grayColor;
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+}
+
+- (void)subductionAction {
+//    [self.numberView updateNumbers:self.numberView.currentNumber - 100 animation:AnimationTypeAutomatic duration:0.3];
+    [self.numberView updateNumbers:521 animation:AnimationTypeAutomatic duration:0.3];
+}
+
+- (void)additionAction {
+    [self.numberView updateNumbers:self.numberView.currentNumber + 55  animation:AnimationTypeAutomatic duration:0.3];
+//    [self.numberView updateNumbers:521 animation:AnimationTypeAutomatic duration:0.3];
 }
 
 

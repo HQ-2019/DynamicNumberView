@@ -14,6 +14,7 @@
 		2E9719C2232378F900F1183B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E9719C0232378F900F1183B /* LaunchScreen.storyboard */; };
 		2E9719C5232378F900F1183B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E9719C4232378F900F1183B /* main.m */; };
 		2E9719CD23237D2700F1183B /* FFDynamicNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E9719CC23237D2700F1183B /* FFDynamicNumberView.m */; };
+		83653B633016140901847525 /* libPods-FFDynamicNumberView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA4499F13ED49C71DC437127 /* libPods-FFDynamicNumberView.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,9 @@
 		2E9719C4232378F900F1183B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2E9719CB23237D2700F1183B /* FFDynamicNumberView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FFDynamicNumberView.h; sourceTree = "<group>"; };
 		2E9719CC23237D2700F1183B /* FFDynamicNumberView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FFDynamicNumberView.m; sourceTree = "<group>"; };
+		59F8ECB4C4891D29B4771A9A /* Pods-FFDynamicNumberView.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FFDynamicNumberView.release.xcconfig"; path = "Pods/Target Support Files/Pods-FFDynamicNumberView/Pods-FFDynamicNumberView.release.xcconfig"; sourceTree = "<group>"; };
+		DA4499F13ED49C71DC437127 /* libPods-FFDynamicNumberView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FFDynamicNumberView.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4DC9D409B5768D440516028 /* Pods-FFDynamicNumberView.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FFDynamicNumberView.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FFDynamicNumberView/Pods-FFDynamicNumberView.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83653B633016140901847525 /* libPods-FFDynamicNumberView.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +52,8 @@
 			children = (
 				2E9719B4232378F800F1183B /* FFDynamicNumberView */,
 				2E9719B3232378F800F1183B /* Products */,
+				43482BF5C80A6C8858C06666 /* Pods */,
+				CAACA3399B4B182DD771984D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -70,10 +77,27 @@
 				2E9719BB232378F800F1183B /* Main.storyboard */,
 				2E9719BE232378F900F1183B /* Assets.xcassets */,
 				2E9719C0232378F900F1183B /* LaunchScreen.storyboard */,
-				2E9719C3232378F900F1183B /* Info.plist */,
 				2E9719C4232378F900F1183B /* main.m */,
+				2E9719C3232378F900F1183B /* Info.plist */,
 			);
 			path = FFDynamicNumberView;
+			sourceTree = "<group>";
+		};
+		43482BF5C80A6C8858C06666 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E4DC9D409B5768D440516028 /* Pods-FFDynamicNumberView.debug.xcconfig */,
+				59F8ECB4C4891D29B4771A9A /* Pods-FFDynamicNumberView.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		CAACA3399B4B182DD771984D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DA4499F13ED49C71DC437127 /* libPods-FFDynamicNumberView.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +107,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E9719C8232378F900F1183B /* Build configuration list for PBXNativeTarget "FFDynamicNumberView" */;
 			buildPhases = (
+				CB3FD89F74BAD96CFFFD25A8 /* [CP] Check Pods Manifest.lock */,
 				2E9719AE232378F800F1183B /* Sources */,
 				2E9719AF232378F800F1183B /* Frameworks */,
 				2E9719B0232378F800F1183B /* Resources */,
@@ -140,6 +165,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		CB3FD89F74BAD96CFFFD25A8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FFDynamicNumberView-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2E9719AE232378F800F1183B /* Sources */ = {
@@ -289,14 +335,13 @@
 		};
 		2E9719C9232378F900F1183B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4DC9D409B5768D440516028 /* Pods-FFDynamicNumberView.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = FFDynamicNumberView/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hq.FFDynamicNumberView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -305,14 +350,13 @@
 		};
 		2E9719CA232378F900F1183B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 59F8ECB4C4891D29B4771A9A /* Pods-FFDynamicNumberView.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = FFDynamicNumberView/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hq.FFDynamicNumberView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

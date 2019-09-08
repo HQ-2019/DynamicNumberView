@@ -48,7 +48,7 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
 @property (nonatomic, strong) UIColor *numberColor;            /**< 字体颜色 */
 @property (nonatomic, assign) NumberAlignment numberAlignment; /**< 对齐方式 */
 @property (nonatomic, assign) CGFloat numberSpace;             /**< 字体之间的间距 */
-@property (nonatomic, assign) NSUInteger currentNumber;        /**< 当前的数值 */
+@property (nonatomic, assign) NSInteger currentNumber;        /**< 当前的数值 */
 
 /**
  更新数字
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
  @param animation 动画类型
  @param duration 动画持续时长
  */
-- (void)updateNumbers:(NSUInteger)numbers
+- (void)updateNumbers:(NSInteger)numbers
             animation:(AnimationType)animation
              duration:(NSTimeInterval)duration;
 
@@ -69,30 +69,28 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
 
 @property (nonatomic, strong) UIFont *numberFont;       /**< 字体 */
 @property (nonatomic, strong) UIColor *numberColor;     /**< 字体颜色 */
-@property (nonatomic, assign) NSUInteger currentNumber; /**< 当前的数值 */
-
-- (void)updateViews;
-
-///**
-// 创建单个数字
-//
-// @param numberFont 字体
-// @param numberColor 字体颜色
-// @return FFSingleNunberView
-// */
-//- (instancetype)initWithNumberFont:(UIFont *)numberFont numberColor:(UIColor *)numberColor;
+@property (nonatomic, assign) NSInteger currentNumber; /**< 当前的数值 */
 
 /**
  设置将要显示的数值
- 通过改变label的高度来达到滚动的效果
+ 计算label文案的高度来调整label的高度
  
  @param dispalyNumber 将要显示的数字
  @param startNumber 开始时的数字
- @param animation 数字切换的动画（只允许ScrollUp和ScrollDown动画）
+ @param animation 数字切换的动画
  */
-- (void)setDispalyNumber:(NSUInteger)dispalyNumber
-             startNumber:(NSUInteger)startNumber
+- (void)setDispalyNumber:(NSInteger)dispalyNumber
+             startNumber:(NSInteger)startNumber
                animation:(AnimationType)animation;
+
+/**
+ 更新数字,执行对应的动画
+
+ @param animation 动画类型
+ @param duration 动画持续时长
+ */
+- (void)updateNumberWithAnimation:(AnimationType)animation
+                         duration:(NSTimeInterval)duration;
 
 @end
 

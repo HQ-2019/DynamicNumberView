@@ -41,6 +41,13 @@ static CGSize singleNumerSize(UIFont *font) {
     return self;
 }
 
+- (NSMutableArray<FFSingleNunberView *> *)numberViews {
+    if (_numberViews == nil) {
+        _numberViews = @[].mutableCopy;
+    }
+    return _numberViews;
+}
+
 /**
  更新数字
  
@@ -48,16 +55,17 @@ static CGSize singleNumerSize(UIFont *font) {
  @param animation 动画类型
  @param duration 动画持续时长
  */
-- (void)updateNumbers:(NSUInteger)numbers
+- (void)updateNumbers:(NSInteger)numbers
             animation:(AnimationType)animation
              duration:(NSTimeInterval)duration {
-
-    // 记录当前的数值
-    self.currentNumber = numbers;
+    NSAssert(numbers >= 0, @"组件不支持显示负数");
+    if (numbers < 0) {
+        return;
+    }
 
     // 将原来多余的数字视图移除
-    NSUInteger count = [NSString stringWithFormat:@"%lu", numbers].length;
-    if (self.numberViews.count >= count) {
+    NSInteger count = [NSString stringWithFormat:@"%lu", numbers].length;
+    if (self.numberViews.count > count) {
         for (int i = 0; i < self.numberViews.count - count; i++) {
             FFSingleNunberView *numberView = self.numberViews[i];
             [self.numberViews removeObjectAtIndex:i];
@@ -66,6 +74,20 @@ static CGSize singleNumerSize(UIFont *font) {
         }
     }
 
+    // 判断是否需要补充创建视图 记录需要补充的视图数量
+    NSInteger x = count - self.numberViews.count;
+    NSMutableArray *tempArray = self.numberViews.mutableCopy;
+    for (int i = 0; i < x; i++) {
+        FFSingleNunberView *numberView = [FFSingleNunberView new];
+        [self addSubview:numberView];
+        if (self.numberViews.count) {
+            [tempArray insertObject:numberView atIndex:0];
+        } else {
+            [tempArray addObject:numberView];
+        }
+    }
+    self.numberViews = tempArray.mutableCopy;
+    
     // 根据对齐方式计算第一位数的x坐标
     CGFloat firstX = 0.0;
     // 单个数组的size
@@ -84,30 +106,32 @@ static CGSize singleNumerSize(UIFont *font) {
         default:
             break;
     }
-
+    
+    // 设置动画类型
+    AnimationType animationType = animation;
+    if (animationType == AnimationTypeAutomatic) {
+        animationType = numbers > self.currentNumber ? AnimationTypeScrollUp : AnimationTypeScrollDown;
+    }
+    
     // 创建或调整数字视图
     for (int i = 0; i < count; i++) {
-        FFSingleNunberView *numberView;
-        // 判断是否需要补充视图
-        if (self.numberViews.count < count) {
-            numberView = [FFSingleNunberView new];
-            [self addSubview:numberView];
-        }
+        FFSingleNunberView *numberView = self.numberViews[i];
 
         // 根据对齐方式计算每个numberView的位置
         CGFloat x = firstX + i * (numberSize.width + self.numberSpace);
         numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
-        [numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:AnimationTypeScrollUp];
         
-        [numberView updateViews];
+        // 设置数字label的高度
+        [numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
     }
     
-    // 执行动画
-    [UIView animateWithDuration:duration animations:^{
-        for (FFSingleNunberView *numberView in self.numberViews) {
-            [numberView updateViews];
-        }
-    }];
+    // 动态更新label到指定的数字
+    for (FFSingleNunberView *numberView in self.numberViews) {
+        [numberView updateNumberWithAnimation:animationType duration:duration];
+    }
+    
+    // 记录当前的数值
+    self.currentNumber = numbers;
 }
 
 /**
@@ -117,10 +141,10 @@ static CGSize singleNumerSize(UIFont *font) {
  @param index 指定的位置
  @return 单个数字
  */
-- (NSUInteger)subnumberWithNumer:(NSUInteger)number atIndex:(NSUInteger)index {
+- (NSInteger)subnumberWithNumer:(NSInteger)number atIndex:(NSInteger)index {
     NSString *numberStr = [NSString stringWithFormat:@"%lu", number];
     NSAssert(numberStr.length > index, @"截取数字索引越界");
-    NSUInteger num = 0;
+    NSInteger num = 0;
     if (numberStr.length > index) {
         num = [[numberStr substringWithRange:NSMakeRange(index, 1)] integerValue];
     }
@@ -133,7 +157,6 @@ static CGSize singleNumerSize(UIFont *font) {
 #pragma mark - 单个数字视图
 @interface FFSingleNunberView ()
 
-@property (nonatomic, strong) UIView *backgroudView; /**< label的区域视图，主要用于裁剪label */
 @property (nonatomic, strong) UILabel *numberLabel;  /**< 数字label */
 
 @end
@@ -146,21 +169,10 @@ static CGSize singleNumerSize(UIFont *font) {
         self.numberFont = [UIFont systemFontOfSize:15];
         self.numberColor = UIColor.blackColor;
         self.currentNumber = 0;
+//        self.clipsToBounds = YES;
+        self.backgroundColor = UIColor.whiteColor;
     }
     return self;
-}
-
-- (UIView *)backgroudView {
-    if (_backgroudView == nil) {
-        _backgroudView = [UIView new];
-        CGRect rect = self.frame;
-        rect.origin = CGPointZero;
-        _backgroudView.frame = rect;
-//        _backgroudView.clipsToBounds = YES;
-        _backgroudView.backgroundColor = UIColor.grayColor;
-        [self addSubview:_backgroudView];
-    }
-    return _backgroudView;
 }
 
 - (UILabel *)numberLabel {
@@ -168,43 +180,40 @@ static CGSize singleNumerSize(UIFont *font) {
         _numberLabel = [UILabel new];
         _numberLabel.textColor = self.numberColor;
         _numberLabel.font = self.numberFont;
-        CGRect rect = self.backgroudView.frame;
+        _numberLabel.textAlignment = NSTextAlignmentCenter;
+        CGRect rect = self.frame;
         rect.origin = CGPointZero;
         _numberLabel.frame = rect;
-        [self.backgroudView addSubview:_numberLabel];
+        [self addSubview:_numberLabel];
     }
     return _numberLabel;
-}
-
-/**
- 更新label的Y坐标
- */
-- (void)updateViews {
-    CGRect rect = self.numberLabel.frame;
-    rect.origin.y = singleNumerSize(self.numberLabel.font).height - rect.size.height;
-    self.numberLabel.frame = rect;
 }
 
 /**
  设置将要显示的数值
  计算label的高度
  最后通过改变label的高度来达到滚动的效果
-
+ 
  @param dispalyNumber 将要显示的数字
  @param startNumber 开始时的数字
  @param animation 数字切换的动画（只允许ScrollUp和ScrollDown动画）
  */
-- (void)setDispalyNumber:(NSUInteger)dispalyNumber
-             startNumber:(NSUInteger)startNumber
+- (void)setDispalyNumber:(NSInteger)dispalyNumber
+             startNumber:(NSInteger)startNumber
                animation:(AnimationType)animation {
-    // 只处理向上或向下的滚动动画计算
-    if (animation != AnimationTypeScrollUp && animation != AnimationTypeScrollDown) {
+    if (self.currentNumber == dispalyNumber) {
+        // Integer的默认值是0，为了避免首次赋值是0时不显示，这里需要给label设置值
+        [self settttt:[NSString stringWithFormat:@"%lu", dispalyNumber]];
         return;
     }
-
-    // 新值和起始值一致时不做动效处理
-    if (startNumber == dispalyNumber) {
-        // 将label的size恢复成单值的size
+    
+    // 记录当前显示的数值
+    self.currentNumber = dispalyNumber;
+    
+    // 只处理向上或向下的滚动动画计算
+    if (animation != AnimationTypeScrollUp && animation != AnimationTypeScrollDown) {
+        [self settttt:[NSString stringWithFormat:@"%lu", dispalyNumber]];
+        return;
     }
 
     /* label的值取决于两个因素
@@ -222,44 +231,69 @@ static CGSize singleNumerSize(UIFont *font) {
     NSMutableString *numberString = [NSMutableString stringWithFormat:@"%lu", (unsigned long)startNumber];
     if (animation == AnimationTypeScrollUp) {
         if (startNumber < dispalyNumber) {
-            for (NSUInteger i = startNumber + 1; i <= dispalyNumber; i++) {
+            for (NSInteger i = startNumber + 1; i <= dispalyNumber; i++) {
                 [numberString appendFormat:@"\n%lu", i];
             }
         } else {
-            for (NSUInteger i = startNumber + 1; i < 10; i++) {
+            for (NSInteger i = startNumber + 1; i < 10; i++) {
                 [numberString appendFormat:@"\n%lu", i];
             }
-            for (NSUInteger i = 0; i <= dispalyNumber; i++) {
+            for (NSInteger i = 0; i <= dispalyNumber; i++) {
                 [numberString appendFormat:@"\n%lu", i];
             }
         }
     } else if (animation == AnimationTypeScrollDown) {
         if (startNumber > dispalyNumber) {
-            for (NSUInteger i = startNumber + 1; i <= dispalyNumber; i++) {
+            for (NSInteger i = startNumber - 1; i >= dispalyNumber; i--) {
                 [numberString appendFormat:@"\n%lu", i];
             }
         } else {
-            for (NSUInteger i = startNumber - 1; i >= 0; i--) {
+            for (NSInteger i = startNumber - 1; i >= 0; i--) {
                 [numberString appendFormat:@"\n%lu", i];
             }
-            for (NSUInteger i = 9; i >= dispalyNumber; i--) {
+            for (NSInteger i = 9; i >= dispalyNumber; i--) {
                 [numberString appendFormat:@"\n%lu", i];
             }
         }
     }
-    
+    [self settttt:numberString];
+}
+
+- (void)settttt:(NSString *)numberString {
     NSString *text = [numberString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-    NSUInteger numberCount = text.length;
+//    NSLog(@"\n 原值 %lu  新值 %lu text: %@   \nnumberString: %@", startNumber, dispalyNumber, text, numberString);
+    NSInteger numberCount = text.length;
     // 更新label的内容和size
     self.numberLabel.text = numberString;
     self.numberLabel.numberOfLines = numberCount;
     CGSize size = singleNumerSize(self.numberLabel.font);
     CGRect rect = self.numberLabel.frame;
     rect.size.height = size.height * numberCount;
+    rect.origin = CGPointZero;
     self.numberLabel.frame = rect;
+}
+
+
+/**
+ 更新数字,执行对应的动画
+ 
+ @param animation 动画类型
+ @param duration 动画持续时长
+ */
+- (void)updateNumberWithAnimation:(AnimationType)animation
+                         duration:(NSTimeInterval)duration {
     
-    // 记录当前显示的数值
-    self.currentNumber = dispalyNumber;
+    CGRect rect = self.numberLabel.frame;
+    rect.origin.y = singleNumerSize(self.numberLabel.font).height - rect.size.height;
+    
+    if (animation == AnimationTypeNone) {
+        self.numberLabel.frame = rect;
+    } else {
+        // 动态实现数字的滚动
+        [UIView animateWithDuration:duration animations:^{
+            self.numberLabel.frame = rect;
+        }];
+    }
 }
 
 @end
