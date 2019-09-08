@@ -32,9 +32,9 @@
     //    self.numberView.frame = CGRectMake((self.view.frame.size.width - 200) / 2, 100, 200, 40);
     [self.numberView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
-        make.top.mas_equalTo(100);
+        make.top.mas_equalTo(150);
         make.width.mas_equalTo(200);
-        make.height.mas_equalTo(40);
+        make.height.mas_equalTo(60);
     }];
     [self.numberView layoutIfNeeded];
     
