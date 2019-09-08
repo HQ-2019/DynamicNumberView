@@ -23,8 +23,9 @@
     
     self.numberView = [FFDynamicNumberView new];
     self.numberView.backgroundColor = UIColor.purpleColor;
-    self.numberView.numberColor = UIColor.redColor;
-    self.numberView.numberSpace = 10;
+    self.numberView.numberColor = UIColor.blackColor;
+    self.numberView.numberBackColor = UIColor.whiteColor;
+    self.numberView.numberSpace = 20;
     self.numberView.numberFont = [UIFont boldSystemFontOfSize:17];
     self.numberView.numberAlignment = NumberAlignmentCenter;
     [self.view addSubview:self.numberView];
@@ -40,9 +41,19 @@
     // 设置默认展示的数字
     [self.numberView updateNumbers:1055 animation:AnimationTypeNone duration:0];
     
-    
-    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, 400, 100, 40) title:@"-" action:@selector(subductionAction)];
-    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, 450, 100, 40) title:@"+" action:@selector(additionAction)];
+    CGFloat top = 250;
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, top, 100, 40)
+                         title:@"做减法"
+                        action:@selector(subductionAction)];
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, top += 50, 100, 40)
+                         title:@"做加法"
+                        action:@selector(additionAction)];
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, top += 50, 100, 40)
+                         title:@"随机数滚动"
+                        action:@selector(randomAction)];
+    [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, top += 50, 100, 40)
+                         title:@"随机数无滚动"
+                        action:@selector(randomNoneAction)];
 }
 
 - (void)buildButtonWithFrame:(CGRect)frame title:(NSString *)title action:(SEL)action {
@@ -56,13 +67,24 @@
 }
 
 - (void)subductionAction {
-//    [self.numberView updateNumbers:self.numberView.currentNumber - 100 animation:AnimationTypeAutomatic duration:0.3];
-    [self.numberView updateNumbers:521 animation:AnimationTypeAutomatic duration:0.3];
+    // 确保最小值不能小于100
+    if (self.numberView.currentNumber - 55 > 100) {
+        [self.numberView updateNumbers:self.numberView.currentNumber - 55 animation:AnimationTypeAutomatic duration:0.3];
+    }
+//    [self.numberView updateNumbers:521 animation:AnimationTypeAutomatic duration:3];
 }
 
 - (void)additionAction {
-    [self.numberView updateNumbers:self.numberView.currentNumber + 55  animation:AnimationTypeAutomatic duration:0.3];
+    [self.numberView updateNumbers:self.numberView.currentNumber + 55 animation:AnimationTypeAutomatic duration:0.3];
 //    [self.numberView updateNumbers:521 animation:AnimationTypeAutomatic duration:0.3];
+}
+
+- (void)randomAction {
+    [self.numberView updateNumbers:arc4random() % 10000 animation:AnimationTypeAutomatic duration:0.3];
+}
+
+- (void)randomNoneAction {
+    [self.numberView updateNumbers:arc4random() % 10000 animation:AnimationTypeNone duration:0.3];
 }
 
 

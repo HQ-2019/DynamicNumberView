@@ -46,9 +46,10 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
 
 @property (nonatomic, strong) UIFont *numberFont;              /**< 字体 */
 @property (nonatomic, strong) UIColor *numberColor;            /**< 字体颜色 */
+@property (nonatomic, strong) UIColor *numberBackColor;        /**< 字体背景颜色 */
 @property (nonatomic, assign) NumberAlignment numberAlignment; /**< 对齐方式 */
 @property (nonatomic, assign) CGFloat numberSpace;             /**< 字体之间的间距 */
-@property (nonatomic, assign) NSInteger currentNumber;        /**< 当前的数值 */
+@property (nonatomic, assign) NSInteger currentNumber;         /**< 当前的数值 */
 
 /**
  更新数字

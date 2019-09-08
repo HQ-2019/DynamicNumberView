@@ -35,6 +35,7 @@ static CGSize singleNumerSize(UIFont *font) {
         // 设置默认值
         self.numberFont = [UIFont systemFontOfSize:15];
         self.numberColor = UIColor.blackColor;
+        self.numberBackColor = UIColor.whiteColor;
         self.numberSpace = 5.0;
         self.currentNumber = 0;
     }
@@ -74,11 +75,14 @@ static CGSize singleNumerSize(UIFont *font) {
         }
     }
 
-    // 判断是否需要补充创建视图 记录需要补充的视图数量
-    NSInteger x = count - self.numberViews.count;
+    // 创建视图，如果原来的视图有多余则移除
+    NSInteger viewCount = count - self.numberViews.count;
     NSMutableArray *tempArray = self.numberViews.mutableCopy;
-    for (int i = 0; i < x; i++) {
+    for (int i = 0; i < viewCount; i++) {
         FFSingleNunberView *numberView = [FFSingleNunberView new];
+        numberView.backgroundColor = self.numberBackColor;
+        numberView.numberFont = self.numberFont;
+        numberView.numberColor = self.numberColor;
         [self addSubview:numberView];
         if (self.numberViews.count) {
             [tempArray insertObject:numberView atIndex:0];
@@ -169,7 +173,7 @@ static CGSize singleNumerSize(UIFont *font) {
         self.numberFont = [UIFont systemFontOfSize:15];
         self.numberColor = UIColor.blackColor;
         self.currentNumber = 0;
-//        self.clipsToBounds = YES;
+        self.clipsToBounds = YES;
         self.backgroundColor = UIColor.whiteColor;
     }
     return self;
@@ -203,7 +207,7 @@ static CGSize singleNumerSize(UIFont *font) {
                animation:(AnimationType)animation {
     if (self.currentNumber == dispalyNumber) {
         // Integer的默认值是0，为了避免首次赋值是0时不显示，这里需要给label设置值
-        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber]];
+        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber] animation:animation];
         return;
     }
     
@@ -212,7 +216,7 @@ static CGSize singleNumerSize(UIFont *font) {
     
     // 只处理向上或向下的滚动动画计算
     if (animation != AnimationTypeScrollUp && animation != AnimationTypeScrollDown) {
-        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber]];
+        [self updateLabelHeightWithText:[NSString stringWithFormat:@"%lu", dispalyNumber] animation:animation];
         return;
     }
 
@@ -221,60 +225,66 @@ static CGSize singleNumerSize(UIFont *font) {
      * 2、开始的数字与最终的数字的大小
      *
      * 列如：向上滚动(加法)
-     * 从 6 -> 3，值为 67890123
+     * 从 6 -> 3，值为 6543
      * 从 3 -> 6，值为 3456
      *
      * 列如：向下滚动(减法)
      * 从 6 -> 3，值为 6543
-     * 从 3 -> 6，值为 32109876
+     * 从 3 -> 6，值为 3456
      */
-    NSMutableString *numberString = [NSMutableString stringWithFormat:@"%lu", (unsigned long)startNumber];
+    NSMutableString *numberString;
     if (animation == AnimationTypeScrollUp) {
+        numberString = [NSMutableString stringWithFormat:@"%lu", (unsigned long)startNumber];
         if (startNumber < dispalyNumber) {
             for (NSInteger i = startNumber + 1; i <= dispalyNumber; i++) {
-                [numberString appendFormat:@"\n%lu", i];
+                [numberString appendFormat:@"\n%ld", (long)i];
             }
         } else {
-            for (NSInteger i = startNumber + 1; i < 10; i++) {
-                [numberString appendFormat:@"\n%lu", i];
-            }
-            for (NSInteger i = 0; i <= dispalyNumber; i++) {
-                [numberString appendFormat:@"\n%lu", i];
+            for (NSInteger i = startNumber - 1; i >= dispalyNumber; i--) {
+                [numberString appendFormat:@"\n%ld", (long)i];
             }
         }
     } else if (animation == AnimationTypeScrollDown) {
+        numberString = [NSMutableString stringWithFormat:@"%lu", (unsigned long)dispalyNumber];
         if (startNumber > dispalyNumber) {
-            for (NSInteger i = startNumber - 1; i >= dispalyNumber; i--) {
-                [numberString appendFormat:@"\n%lu", i];
+            for (NSInteger i = dispalyNumber + 1; i <= startNumber; i++) {
+                [numberString appendFormat:@"\n%ld", (long)i];
             }
         } else {
-            for (NSInteger i = startNumber - 1; i >= 0; i--) {
-                [numberString appendFormat:@"\n%lu", i];
-            }
-            for (NSInteger i = 9; i >= dispalyNumber; i--) {
-                [numberString appendFormat:@"\n%lu", i];
+            for (NSInteger i = dispalyNumber - 1; i >= startNumber; i--) {
+                [numberString appendFormat:@"\n%ld", (long)i];
             }
         }
     }
-    [self updateLabelHeightWithText:numberString];
+    [self updateLabelHeightWithText:numberString animation:animation];
 }
 
-- (void)updateLabelHeightWithText:(NSString *)numberString {
+/**
+ 根据文本内容和即将持续的动画设置label的y和height
+
+ @param numberString 数字文本
+ @param animation 动画
+ */
+- (void)updateLabelHeightWithText:(NSString *)numberString animation:(AnimationType)animation {
+    // 更新label的内容和size
     NSString *text = [numberString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     NSInteger numberCount = text.length;
-    // 更新label的内容和size
     self.numberLabel.text = numberString;
     self.numberLabel.numberOfLines = numberCount;
     CGSize size = singleNumerSize(self.numberLabel.font);
     CGRect rect = self.numberLabel.frame;
     rect.size.height = size.height * numberCount;
-    rect.origin = CGPointZero;
+    if (animation == AnimationTypeScrollDown) {
+        rect.origin = CGPointMake(0, singleNumerSize(self.numberLabel.font).height - rect.size.height);
+    } else {
+        rect.origin = CGPointZero;
+    }
     self.numberLabel.frame = rect;
 }
 
 
 /**
- 更新数字,执行对应的动画
+ 更新数字,通过更新y坐标滚动到将要显示的数字(如果需要滚动动画)
  
  @param animation 动画类型
  @param duration 动画持续时长
@@ -283,7 +293,11 @@ static CGSize singleNumerSize(UIFont *font) {
                          duration:(NSTimeInterval)duration {
     
     CGRect rect = self.numberLabel.frame;
-    rect.origin.y = singleNumerSize(self.numberLabel.font).height - rect.size.height;
+    if (animation == AnimationTypeScrollDown) {
+        rect.origin.y = 0;
+    } else {
+        rect.origin.y = singleNumerSize(self.numberLabel.font).height - rect.size.height;
+    }
     
     if (animation == AnimationTypeNone) {
         self.numberLabel.frame = rect;
