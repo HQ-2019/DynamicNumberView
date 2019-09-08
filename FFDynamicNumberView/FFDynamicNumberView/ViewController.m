@@ -39,7 +39,7 @@
     [self.numberView layoutIfNeeded];
     
     // 设置默认展示的数字
-    [self.numberView updateNumbers:1055 animation:AnimationTypeNone duration:0];
+    [self.numberView updateNumbers:1555 animation:AnimationTypeAutomatic duration:0.5];
     
     CGFloat top = 250;
     [self buildButtonWithFrame:CGRectMake((self.view.frame.size.width - 100) / 2, top, 100, 40)
